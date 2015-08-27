@@ -1,10 +1,10 @@
 {
-  "name": "spiral-minimap",
-  "version": "0.0.3",
+  "name": "spiral-knob",
+  "version": "0.0.1",
   "authors": [
     "Hongchan Choi <hongchan.choi@gmail.com>"
   ],
-  "description": "A Polymer element renders an interactive mini map of AudioBuffer",
+  "description": "A Polymer element of an audio knob for Web Audio API AudioParam object",
   "keywords": [
     "web-component",
     "web-components",
@@ -12,21 +12,19 @@
     "audio",
     "spiral",
     "web-audio",
-    "waveform",
-    "time-domain",
-    "minimap"
+    "audioparam",
+    "knob"
   ],
-  "main": "spiral-minimap.html",
+  "main": "spiral-knob.html",
   "license": "http://polymer.github.io/LICENSE.txt",
-  "homepage": "https://github.com/hoch/spiral-minimap/",
+  "homepage": "https://github.com/hoch/spiral-knob/",
   "ignore": [
     "/.*",
     "/test/",
     "/demo/"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.8",
-    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.2"
+    "polymer": "Polymer/polymer#^1.1.1"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.5",

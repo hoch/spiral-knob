@@ -4,13 +4,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <title>&lt;spiral-minimap&gt; | Spiral UI</title>
+    <title>&lt;spiral-knob&gt; | Spiral UI</title>
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="../spiral-minimap.html">
+    <link rel="import" href="../spiral-knob.html">
     <style>
       body {
         padding: 0;
         margin: 0;
+        -webkit-user-select: none;
       }
 
       .element-info {
@@ -32,6 +33,7 @@
       }
 
       #eDump {
+        font-family: monospace;
         padding-top: 1.0em;
       }
     </style>
@@ -42,21 +44,20 @@
       <div class="element-info">
 
         <!-- element description -->
-        <h1><code>&lt;spiral-minimap&gt;</code></h1>
-        <p>Draws the time-domain representation of <code>AudioBuffer</code> which
-          can be navigated by dragging two handles and a region. The region can be
-          translated by dragging the center of the region.</p>
-        <p>This interactive mini map is design to be used with
-          <code>&lt;spiral-waveform&gt;</code>.</p>
+        <h1><code>&lt;spiral-knob&gt;</code></h1>
+        <p>Renders a knob (circular UI widget for parameter control) which can
+          be bound to AudioParam object.</p>
 
       </div>
       <div class="element-demo flex">
 
         <!-- demo -->
-        <button onclick="renderAudio()">Render Audio</button>
-        <br><br>
-
-        <spiral-minimap id="eMiniMap"></spiral-minimap>
+        <spiral-knob id="knob-freq" label="Freq" track="true" size="hey"
+          value="100" min-value="60" max-value="250"></spiral-knob>
+        <spiral-knob id="knob-detune" label="Detune" track="true" size="small"
+          value="10" min-value="0" max-value="1200"></spiral-knob>
+        <spiral-knob id="knob-amp" label="Amp" track="true" size="large"
+          value="0.25" min-value="0" max-value="1"></spiral-knob>
         <br>
 
         <div id="eDump"></div>
@@ -65,48 +66,42 @@
     </div>
 
     <script>
-      var isReady = false;
-      
-      var eMiniMap, eDump;
+      var knobFreq, knobAmp, knobDetune;
+      var osc, amp;
 
       var controller = {
         postMessage: function (id, type, data) {
-          eDump.textContent = id + '::' + type + 
-            ' (' + data.start.toFixed(3) + ', ' + data.end.toFixed(3) + ')';
+          eDump.textContent = id + '::' + type + ' (' + data.value.toFixed(3) + ')';
         }
       };
 
-      function renderAudio() {
-        if (!isReady)
-          return;
+      function startAudio() {
+        var context = new AudioContext();
 
-        var context = new OfflineAudioContext(2, 44100 * 1, 44100);
+        osc = context.createOscillator();
+        amp = context.createGain();
 
-        var osc1 = context.createOscillator();
-        var mod = context.createGain();
-        var osc2 = context.createOscillator();
+        knobFreq.bind(osc.frequency);
+        knobDetune.bind(osc.detune);
+        knobAmp.bind(amp.gain);
 
-        osc1.frequency.value = 2 * Math.random() + 11;
-        osc2.frequency.value = 59 * Math.random() + 17;
-        mod.gain.value = 317 * Math.random() + 113;
-
-        osc1.connect(mod);
-        mod.connect(osc2.frequency);
-        osc2.connect(context.destination);
-        osc1.start();
-        osc2.start();  
-
-        context.startRendering().then(function (buffer) {
-          eMiniMap.setController(controller);
-          eMiniMap.setAudioBuffer(buffer);
-          eMiniMap.setRegion(0.1, 0.9);
-        });
+        osc.connect(amp);
+        amp.connect(context.destination);
+        osc.start();
       }
 
       window.addEventListener('WebComponentsReady', function () {
-        eMiniMap = document.querySelector('#eMiniMap');
+        knobFreq = document.querySelector('#knob-freq');
+        knobDetune = document.querySelector('#knob-detune');
+        knobAmp = document.querySelector('#knob-amp');
+
+        knobFreq.setController(controller);
+        knobDetune.setController(controller);
+        knobAmp.setController(controller);
+
         eDump = document.querySelector('#eDump');
-        isReady = true;
+
+        startAudio();
       });
     </script>
   </body>
