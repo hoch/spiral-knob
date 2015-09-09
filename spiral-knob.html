@@ -24,13 +24,18 @@ Example:
       display: inline-block;
       box-sizing: border-box;
       overflow: hidden;
-      margin: 2px;
+      margin: 4px;
+      -webkit-user-select: none;
+    }
+
+    input {
+      outline: none;
       -webkit-user-select: none;
     }
 
     .label {
       display: block;
-      font-size: 0.8em;
+      font-size: 0.75em;
       height: 16px;
       line-height: 16px;
       text-align: center;
@@ -65,8 +70,9 @@ Example:
       display: block;
       background-color: #ECEFF1;
       margin: 0 auto;
-      font-size: 0.8em;
+      font-size: 0.75em;
       height: 16px;
+      line-height: 16px;
       width: 90%;
       text-align: center;
       border-radius: 3px;
@@ -82,7 +88,7 @@ Example:
       <circle id="innerRing" class="inner-ring" />
       <rect id="overlay" class="overlay" x="0" y="0" />
     </svg>
-    <input id="valueInput" type="text" class="value" value="{{_valueString}}">
+    <input id="valueInput" type="text" class="value" value="{{_valueString}}" readonly>
   </template>
 
 </dom-module>
@@ -161,7 +167,7 @@ Example:
         type: String,
         value: 'spiral-knob'
       }
-
+      
     },
 
 
@@ -187,7 +193,7 @@ Example:
 
       // Set the dimension first.
       this.style.width = this._size + 'px';
-      this.style.height = (32 + this._size) + 'px';
+      this.style.height = (34 + this._size) + 'px';
       this.$.svg.style.width = this._size + 'px';
       this.$.svg.style.height = this._size + 'px';
 
@@ -305,7 +311,9 @@ Example:
       this._initialize();
     },
 
-    attached: function () {},
+    attached: function () {
+      this._updateView();
+    },
 
 
     /**
@@ -353,6 +361,9 @@ Example:
 
       // Forcibly update the audioParam value with the value.
       this._targetAudioParam.value = this.value;
+
+      // Update the view to reflect the most recent change.
+      this._updateView();
 
       if (this.track)
         this._trackTargetParam();
