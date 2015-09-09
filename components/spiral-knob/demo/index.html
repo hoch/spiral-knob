@@ -1,0 +1,109 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>&lt;spiral-knob&gt; | Spiral UI</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../spiral-knob.html">
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+        -webkit-user-select: none;
+      }
+
+      .element-info {
+        padding: 1.0em;
+        margin-bottom: 1.0em;
+        box-shadow: 2px 0 5px #607D8B;
+        color: #263238;
+        background-color: #ECEFF1;
+        font-family: sans-serif;
+      }
+
+      .element-demo {
+        padding: 1.0em;
+        font-family: sans-serif;
+      }
+
+      #eMiniMap {
+        height: 128px;
+      }
+
+      #eDump {
+        font-family: monospace;
+        padding-top: 1.0em;
+      }
+    </style>
+  </head>
+
+  <body class="fullbleed">
+    <div class="vertical layout fit">
+      <div class="element-info">
+
+        <!-- element description -->
+        <h1><code>&lt;spiral-knob&gt;</code></h1>
+        <p>Renders a knob (circular UI widget for parameter control) which can
+          be bound to AudioParam object.</p>
+
+      </div>
+      <div class="element-demo flex">
+
+        <!-- demo -->
+        <spiral-knob id="knob-freq" label="Freq" track="true" size="hey"
+          value="100" min-value="60" max-value="250"></spiral-knob>
+        <spiral-knob id="knob-detune" label="Detune" track="true" size="small"
+          value="10" min-value="0" max-value="1200"></spiral-knob>
+        <spiral-knob id="knob-amp" label="Amp" track="true" size="large"
+          value="0.25" min-value="0" max-value="1"></spiral-knob>
+        <br>
+
+        <div id="eDump"></div>
+
+      </div>
+    </div>
+
+    <script>
+      var knobFreq, knobAmp, knobDetune;
+      var osc, amp;
+
+      var controller = {
+        postMessage: function (id, type, data) {
+          eDump.textContent = id + '::' + type + ' (' + data.value.toFixed(3) + ')';
+        }
+      };
+
+      function startAudio() {
+        var context = new AudioContext();
+
+        osc = context.createOscillator();
+        amp = context.createGain();
+
+        knobFreq.bind(osc.frequency);
+        knobDetune.bind(osc.detune);
+        knobAmp.bind(amp.gain);
+
+        osc.connect(amp);
+        amp.connect(context.destination);
+        osc.start();
+      }
+
+      window.addEventListener('WebComponentsReady', function () {
+        knobFreq = document.querySelector('#knob-freq');
+        knobDetune = document.querySelector('#knob-detune');
+        knobAmp = document.querySelector('#knob-amp');
+
+        knobFreq.setController(controller);
+        knobDetune.setController(controller);
+        knobAmp.setController(controller);
+
+        eDump = document.querySelector('#eDump');
+
+        startAudio();
+      });
+    </script>
+  </body>
+
+</html>
